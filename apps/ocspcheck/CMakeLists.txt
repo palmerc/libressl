@@ -1,25 +1,23 @@
 if(NOT MSVC)
 
-set(
-	OCSPCHECK_SRC
+add_executable(ocspcheck
 	http.c
 	ocspcheck.c
 )
 
 check_function_exists(memmem HAVE_MEMMEM)
 if(HAVE_MEMMEM)
-        add_definitions(-DHAVE_MEMMEM)
+        target_compile_definitions(ocspcheck PRIVATE HAVE_MEMMEM)
 else()
-        set(OCSPCHECK_SRC ${OCSPCHECK_SRC} compat/memmem.c)
+        target_sources(ocspcheck PRIVATE compat/memmem.c)
 endif()
 
 if(NOT "${OPENSSLDIR}" STREQUAL "")
-	add_definitions(-DDEFAULT_CA_FILE=\"${OPENSSLDIR}/cert.pem\")
+	target_compile_definitions(ocspcheck PRIVATE DEFAULT_CA_FILE=\"${OPENSSLDIR}/cert.pem\")
 else()
-	add_definitions(-DDEFAULT_CA_FILE=\"${CMAKE_INSTALL_PREFIX}/etc/ssl/cert.pem\")
+	target_compile_definitions(ocspcheck PRIVATE DEFAULT_CA_FILE=\"${CMAKE_INSTALL_PREFIX}/etc/ssl/cert.pem\")
 endif()
 
-add_executable(ocspcheck ${OCSPCHECK_SRC})
 target_include_directories(ocspcheck
 		PRIVATE
 		.

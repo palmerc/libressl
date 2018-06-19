@@ -1,5 +1,4 @@
-set(
-	TLS_SRC
+add_library(tls
 	tls.c
 	tls_bio_cb.c
 	tls_client.c
@@ -14,9 +13,7 @@ set(
 )
 
 if(WIN32)
-	set(
-		TLS_SRC
-		${TLS_SRC}
+	target_sources(tls PRIVATE
 		compat/ftruncate.c
 		compat/getuid.c
 		compat/pread.c
@@ -25,12 +22,11 @@ if(WIN32)
 endif()
 
 if(NOT "${OPENSSLDIR}" STREQUAL "")
-	add_definitions(-D_PATH_SSL_CA_FILE=\"${OPENSSLDIR}/cert.pem\")
+	target_compile_definitions(tls PRIVATE _PATH_SSL_CA_FILE=\"${OPENSSLDIR}/cert.pem\")
 else()
-	add_definitions(-D_PATH_SSL_CA_FILE=\"${CMAKE_INSTALL_PREFIX}/etc/ssl/cert.pem\")
+	target_compile_definitions(tls PRIVATE _PATH_SSL_CA_FILE=\"${CMAKE_INSTALL_PREFIX}/etc/ssl/cert.pem\")
 endif()
 
-add_library(tls ${TLS_SRC})
 target_include_directories(tls
 		PRIVATE
 			.

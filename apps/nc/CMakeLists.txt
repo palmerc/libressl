@@ -1,7 +1,6 @@
 if(BUILD_NC)
 
-set(
-	NC_SRC
+add_executable(nc
 	atomicio.c
 	netcat.c
 	socks.c
@@ -10,39 +9,38 @@ set(
 
 check_function_exists(b64_ntop HAVE_B64_NTOP)
 if(HAVE_B64_NTOP)
-	add_definitions(-DHAVE_B64_NTOP)
+	target_compile_definitions(nc PRIVATE HAVE_B64_NTOP)
 else()
-	set(NC_SRC ${NC_SRC} compat/base64.c)
+	target_sources(nc PRIVATE compat/base64.c)
 endif()
 
 check_function_exists(accept4 HAVE_ACCEPT4)
 if(HAVE_ACCEPT4)
-	add_definitions(-DHAVE_ACCEPT4)
+	target_compile_definitions(nc PRIVATE HAVE_ACCEPT4)
 else()
-	set(NC_SRC ${NC_SRC} compat/accept4.c)
+	target_sources(nc PRIVATE compat/accept4.c)
 endif()
 
 check_function_exists(readpassphrase HAVE_READPASSPHRASE)
 if(HAVE_READPASSPHRASE)
-	add_definitions(-DHAVE_READPASSPHRASE)
+	target_compile_definitions(nc PRIVATE HAVE_READPASSPHRASE)
 else()
-	set(NC_SRC ${NC_SRC} compat/readpassphrase.c)
+	target_sources(nc PRIVATE compat/readpassphrase.c)
 endif()
 
 check_function_exists(strtonum HAVE_STRTONUM)
 if(HAVE_STRTONUM)
-	add_definitions(-DHAVE_STRTONUM)
+	target_compile_definitions(nc PRIVATE HAVE_STRTONUM)
 else()
-	set(NC_SRC ${NC_SRC} compat/strtonum.c)
+	target_sources(nc PRIVATE compat/strtonum.c)
 endif()
 
 if(NOT "${OPENSSLDIR}" STREQUAL "")
-	add_definitions(-DDEFAULT_CA_FILE=\"${OPENSSLDIR}/cert.pem\")
+	target_compile_definitions(nc PRIVATE DEFAULT_CA_FILE=\"${OPENSSLDIR}/cert.pem\")
 else()
-	add_definitions(-DDEFAULT_CA_FILE=\"${CMAKE_INSTALL_PREFIX}/etc/ssl/cert.pem\")
+	target_compile_definitions(nc PRIVATE DEFAULT_CA_FILE=\"${CMAKE_INSTALL_PREFIX}/etc/ssl/cert.pem\")
 endif()
 
-add_executable(nc ${NC_SRC})
 target_include_directories(nc
 		PRIVATE
 			.

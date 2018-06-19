@@ -1,5 +1,4 @@
-set(
-	OPENSSL_SRC
+add_executable(openssl
 	apps.c
 	asn1pars.c
 	ca.c
@@ -50,24 +49,25 @@ set(
 )
 
 if(UNIX)
-	set(OPENSSL_SRC ${OPENSSL_SRC} apps_posix.c)
-	set(OPENSSL_SRC ${OPENSSL_SRC} certhash.c)
+	target_sources(openssl PRIVATE
+		apps_posix.c
+		certhash.c)
 endif()
 
 if(WIN32)
-	set(OPENSSL_SRC ${OPENSSL_SRC} apps_win.c)
-	set(OPENSSL_SRC ${OPENSSL_SRC} certhash_win.c)
-	set(OPENSSL_SRC ${OPENSSL_SRC} compat/poll_win.c)
+	target_sources(openssl PRIVATE
+		apps_win.c
+	    certhash_win.c
+		compat/poll_win.c)
 endif()
 
 check_function_exists(strtonum HAVE_STRTONUM)
 if(HAVE_STRTONUM)
-	add_definitions(-DHAVE_STRTONUM)
+	target_compile_definitions(openssl PRIVATE HAVE_STRTONUM)
 else()
-	set(OPENSSL_SRC ${OPENSSL_SRC} compat/strtonum.c)
+	target_sources(openssl PRIVATE compat/strtonum.c)
 endif()
 
-add_executable(openssl ${OPENSSL_SRC})
 target_include_directories(openssl
 		PRIVATE
 			.)
