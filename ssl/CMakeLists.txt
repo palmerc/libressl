@@ -1,4 +1,5 @@
-add_library(ssl
+set(
+	SSL_SRC
 	bio_ssl.c
 	bs_ber.c
 	bs_cbb.c
@@ -40,6 +41,7 @@ add_library(ssl
 	t1_srvr.c
 )
 
+add_library(ssl ${SSL_SRC})
 target_include_directories(ssl
 		PRIVATE
 			.
